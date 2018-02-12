@@ -8,26 +8,26 @@ TODO see `poetry_parser.py`
 
 ## Features
 
-* The basics
+### The basics
 
 Piton comes with scalar types *int* and *bool*, and not-so-scalar *string*. ints and bools are assigned by copy and strings by reference. The 3 of them are immutables. The *NoneType* also exists internally. (TODO check)
 TODO if else while
 TODO indentation
 TODO comments
 
-* Functions
+### Functions
 
 Calling function is supported, and Piton's standard library includes typed *print* and *len* routines. Definining new functions is also possible, including nested functions. Functions names live in the same namespace as variables, which is a first step towards the past to "first-class citizenship". An internal *function* type does exists but cannot be used to declare variables nor function parameters, and function variables cannot be reassigned.
 
-* String manipulation
+### String manipulation
 
 Piton provides built-in string manipulation features in its standard library, such as subscript access, equality testing and concatenation.
 
-* Scoping
+### Scoping
 
 Python's lexical scoping follows the *LEGB* rule: Local, Enclosed, Global, Built-in. In a Python file, symbols at the upper-most level are assigned to the global scope  (not considering the case of modules). In contrast, Piton does not really have a proper global scope, but all upper-most symbols are located in a implicit *main* function, which scopes acts a a kind of global scope enclosing all other scopes. Appart from this, Piton follow the same *LEGB* order for symbol resolution and supports variable and function shadowing. Functions body form a new block, conditional branches (if/else/while) do not.
 
-* Safety
+### Safety
 
 While Python is highly permissive and dynamic, Piton aims to be a safe static language. Its type system allows type checking and arity checking at compile-time. A few run-time dynamic checks are also performed, such as bounds checking for subscript access (only supported by strings for now), or zero division.
 
