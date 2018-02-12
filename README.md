@@ -41,9 +41,9 @@ To simplify compilation, all binary and unary operations are converted to intern
 
 while be transformed by the Piton compiler into:
 
-> auto_8493 = 2 * b
-> auto_8494 = a + auto_8493
-> print(auto_8494)
+> auto_8493 = 2 * b  
+> auto_8494 = a + auto_8493  
+> print(auto_8494)  
 
 Inlining then becomes much easier as all returned values are already explicitely pushed on the stack. Note that to avoid issue with nested call inside conditional statements, a internal ast block structure is used to enclose the flattened statements.
 
@@ -51,12 +51,12 @@ Inlining then becomes much easier as all returned values are already explicitely
 
 Python-style indentation parsing rests on the emission of *indent*/*dedents* tokens (see [Python 3 full grammar][1]). This requires the ability to emit several tokens from one parsing rule, in order to handle multiple dedents performed in one line such as in the following example:
 
-> def greet(name: str):
->     if name == "William":
->         print_str("Hi Bill!")
->     else:
->         print_str("Hello " + name)
-> \# this line unidents 2 levels
+> def greet(name: str):  
+>     if name == "William":  
+>         print_str("Hi Bill!")  
+>     else:  
+>         print_str("Hello " + name)  
+> \# this line unidents 2 levels  
 > greet("Sarah")
 
 The Racket's yacc parser does not handle this situation out of the box. However, it is possible to wrap multiple tokens into one, and intercept all calls from the lexer to the parser so as to unwrap theses tokens and enqueue them, before dequeue one and returning it to the lexer.
