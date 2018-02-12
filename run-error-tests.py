@@ -22,7 +22,7 @@ tests.sort()
 for test in tests:
     print(test)
     try:
-        compile_cmd = "racket -t ./piton.rkt " + test
+        compile_cmd = "racket -t ./src/piton.rkt " + test
         subprocess.check_output([compile_cmd], shell=True)
         run_cmd = "spim -file ./out.s"
         piton_output = subprocess.check_output([run_cmd], shell=True)

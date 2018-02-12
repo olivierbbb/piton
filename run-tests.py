@@ -48,7 +48,7 @@ for test in tests:
     python_output = python_output.decode('utf-8').strip()
 
     try:
-        compile_cmd = "racket -t ./piton.rkt " + test
+        compile_cmd = "racket -t ./src/piton.rkt " + test
         subprocess.check_output([compile_cmd], shell=True)
         run_cmd = "spim -file ./out.s"
         piton_output = subprocess.check_output([run_cmd], shell=True)
