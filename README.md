@@ -56,7 +56,7 @@ Python-style indentation parsing rests on the emission of *indent*/*dedents* tok
             print_str("Hi Bill!")  
         else:  
             print_str("Hello " + name)  
-    \# this line unidents 2 levels  
+    # this line unidents 2 levels  
     greet("Sarah")
 
 The Racket's yacc parser does not handle this situation out of the box. However, it is possible to wrap multiple tokens into one, and intercept all calls from the lexer to the parser so as to unwrap theses tokens and enqueue them, before dequeue one and returning it to the lexer.
