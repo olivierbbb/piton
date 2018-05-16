@@ -5,7 +5,7 @@ Piton is both a language mimicking the syntax and semantics of Python and a comp
 [1]: https://www.python.org/dev/peps/pep-0484/
 [2]: https://www.python.org/dev/peps/pep-0526/
 
-## Tests and sample program
+## Sample program and tests
 
 The *tests/* folder contains a fairly exhaustive demonstration of all features and errors supported. You will need Spim (a MIPS simulator) and Python 3.6 to execute *run-features-tests.py*, as it will execute all code in *tests/features/* and compare Piton and Python output.
 
@@ -27,7 +27,7 @@ Function calls are implemented, and Piton's standard library includes typed *pri
 
 ### Scoping
 
-Python's lexical scoping follows the *LEGB* rule: Local, Enclosed, Global, Built-in. In a Python file, symbols at the upper-most level are assigned to the global scope  (not considering the case of modules). In contrast, Piton does not really have a proper global scope, but all upper-most symbols are located in a implicit *main* function, which scopes acts a a kind of global scope enclosing everything else except built-ins. Apart from this, Piton follow the same *LEGB* order for symbol resolution and supports variable and function shadowing. Function bodies open a new scope, conditional branches do not, just as in Python.
+Python's lexical scoping follows the LEGB rule: Local, Enclosed, Global, Built-in. In a Python file, symbols at the upper-most level are assigned to the global scope  (not considering the case of modules). In contrast, Piton does not really have a proper global scope, but all upper-most symbols are located in a implicit *main* function, which scopes acts a a kind of global scope enclosing everything else except built-ins. Apart from this, Piton follow the same LEGB order for symbol resolution and supports variable and function shadowing. Function bodies open a new scope, conditional branches do not, just as in Python.
 
 ### Safety
 
