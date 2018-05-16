@@ -9,7 +9,13 @@ Piton is both a language mimicking the syntax and semantics of Python and a comp
 
 The *tests/* folder contains a fairly exhaustive demonstration of all features and errors supported. You will need Spim (a MIPS simulator) and Python 3.6 to execute *run-features-tests.py*, as it will execute all code in *tests/features/* and compare Piton and Python output.
 
-The *samples/* folder contains a short program showcasing Piton features. You may compile it with *src/piton.rkt samples/poetry_generator.py* and then run the resulting *samples/poetry_generator.s* in Spim.
+The *samples/* folder contains a short program showcasing Piton features. You may compile it with:
+
+    src/piton.rkt samples/poetry_generator.py
+
+and then run the resulting in Spim with:
+
+    spim -f samples/poetry_generator.s
 
 ## Features
 
