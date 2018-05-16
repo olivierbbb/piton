@@ -204,7 +204,7 @@
         (lb $a0 (mem 0 $a0))
         (sne $v0 $a0 0) ; false if not empty
         (jr $ra)))
-  
+
 ;; Add strings
 (define (add-strs)
   ; prepare while labels
@@ -226,7 +226,7 @@
                 (lw $t1 (mem (* -4 2) $sp)) ; 2d string
                 (lw $t2 (mem (* -4 3) $sp)) ; 1st length
                 (move $t3 $v0) ; 2d length
-        
+
                 ; allocate new length
                 (add $a0 $t2 $t3) ; total length
                 (addi $a0 $a0 1) ; +1 for \0
@@ -235,7 +235,7 @@
                 ; copy new address to use it as pointer
                 ; while preserving $v0
                 (move $t4 $v0)
-        
+
                 ; copy 1st string to new address
                 while1-label
                 (lb $t5 (mem 0 $t0)) ; current char
@@ -247,7 +247,7 @@
                 (addi $t4 $t4 1)
                 (b while1-label)
                 endwhile1-label
-        
+
                 ; copy 2d string to new address
                 while2-label
                 (lb $t5 (mem 0 $t1)) ; current char
@@ -262,7 +262,7 @@
 
                 ; add \0 at end
                 (sb $zero (mem 0 $t4))
-        
+
                 ; new string already in $v0
                 (jr $ra))))
 

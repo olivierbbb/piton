@@ -44,7 +44,7 @@
    (tokens lex-keywords lex-delimiters lex-operators lex-atoms)
    (start prog)
    (end eof)
-   
+
    (grammar
     ;; Program
     (prog
@@ -67,13 +67,13 @@
     (return-stmt
      ((return expr) (ast-pos-return $2 $1-start-pos))
      ((return)      (ast-pos-return #f $1-start-pos)))
-    
+
     ;; Compound statement
     (compound-stmt
      ((if-stmt) $1)
      ((while-stmt) $1)
      ((funcdef) $1))
-    
+
     ;; Expression
     (expr
      ((atom)                $1)
@@ -89,7 +89,7 @@
      ((name)           (ast-pos-name $1 $1-start-pos))
      ((subscript)      $1)
      ((opar expr cpar) $2))
-    
+
     ;; Call
     (call
      ;((atom args-with-pars) (ast-pos-call $1 $3 $1-start-pos))
@@ -120,10 +120,10 @@
      ((expr lt expr)   (ast-pos-binoper '< $1 $3 $1-start-pos))
      ((expr gte expr)  (ast-pos-binoper '>= $1 $3 $1-start-pos))
      ((expr lte expr)  (ast-pos-binoper '<= $1 $3 $1-start-pos)))
-    
+
     (unoper
      ((lnot expr) (ast-pos-unoper 'lnot $2 $1-start-pos)))
-    
+
     ;; If
     (if-stmt
      ((if expr col suite else col suite) (ast-pos-if $2 $4 $7 $1-start-pos))
@@ -131,7 +131,7 @@
     ;; While
     (while-stmt
      ((while expr col suite) (ast-pos-while $2 $4 $1-start-pos)))
-    
+
     ;; Function definition
     (funcdef
      ((def name params-with-pars arrow type col suite) (ast-pos-funcdef $2 $5 $3 $7 $1-start-pos))
@@ -156,7 +156,7 @@
      ; allow empty lines
      ((eol suite-stmts)  $2)
      ((eol dedent)       (list))))
-    
+
    ;; Operator precedence
    (precs
     (left lor)
@@ -172,7 +172,7 @@
     (left sub)
     (left mul)
     (left div))
-   
+
    (error (lambda (tok-ok? tok-name tok-value start-pos end-pos)
             (raise-syntax-error start-pos (if tok-value tok-value tok-name))))))
    ;(debug "yacc.dbg")))

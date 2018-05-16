@@ -10,14 +10,14 @@
 (provide typecheck)
 (require racket/trace)
 
-;; <return> ast
+;; <returns> ast
 (define (typecheck ast)
   ; local and built-in scopes (no global)
   (define symtables (list (hash) std-lib))
   (let-values ([(ast _) (typecheck-stmts ast symtables std-none)])
     ast))
 
-;; <return> type for id or fails if not declared
+;; <returns> type for id or fails if not declared
 (define (resolve-id id pos symtables)
   (when (empty? symtables)
     (raise-undeclared-name-error pos id))
@@ -27,7 +27,7 @@
       (resolve-id id pos (rest symtables))))
 
 ;; Group of statements
-;; <return> statements, symtables
+;; <returns> statements, symtables
 (define (typecheck-stmts stmts symtables expected-return-type [allow-funcdef? #t])
   (for/fold ([stmts (list)]
              [symtables symtables])
@@ -38,7 +38,7 @@
               symtables))))
 
 ;; Statement
-;; <return> statement, symtables
+;; <returns> statement, symtables
 (define (typecheck-stmt stmt symtables expected-return-type [allow-funcdef? #t])
   (match stmt
     ; variable declaration
@@ -68,7 +68,7 @@
                symtables))]))
 
 ;; Variable declaration
-;; <return> statement, symtables
+;; <returns> statement, symtables
 (define (typecheck-decl id type val pos symtables)
   (define local-symtable (first symtables))
   ; check for existing symbol with same id
@@ -86,7 +86,7 @@
               symtables))))
 
 ;; Assignation
-;; <return> statement, values
+;; <returns> statement, values
 (define (typecheck-assign target val pos symtables)
   ; typecheck value expression
   (define target-type (resolve-id target pos symtables))
@@ -101,7 +101,7 @@
             symtables)))
 
 ;; Return
-;; <return> statement, symtables
+;; <returns> statement, symtables
 (define (typecheck-return val pos symtables expected-return-type)
   ; return without value: default to none
   (let ([val (or val (ast-pos-const 'none pos))])
@@ -114,7 +114,7 @@
               symtables))))
 
 ;; If
-;; <return> statement, symtables
+;; <returns> statement, symtables
 (define (typecheck-if test body else-body pos symtables expected-return-type)
   ; typecheck test expression
   (let-values ([(test test-type) (typecheck-expr test symtables)])
@@ -139,17 +139,17 @@
               (values (ast-if test body else-body)
                       (cons merged-symtable (rest symtables)))))))))
 
-;; <return> unique symtable and check type consistency
+;; <returns> unique symtable and check type consistency
 (define (merge-if-else-symtables if-symtable else-symtable pos)
-  
+
   (hash-union if-symtable else-symtable
               #:combine/key (lambda (id if-type else-type)
                               (if (equal? if-type else-type)
                                   if-type
                                   (raise-type-consistency-error pos id if-type else-type)))))
-  
+
 ;; While
-;; <return> statement, symtables
+;; <returns> statement, symtables
 (define (typecheck-while test body pos symtables expected-return-type)
   ; typecheck test expression
   (let-values ([(test test-type) (typecheck-expr test symtables)])
@@ -167,13 +167,13 @@
                 symtables)))))
 
 ;; Function definition
-;; <return> statement, symtables
+;; <returns> statement, symtables
 (define (typecheck-funcdef id return-type params body pos symtables)
   (define local-symtable (first symtables))
   ; check for existing symbol with same id
   (when (hash-has-key? local-symtable id)
     (raise-name-already-declared-error pos id))
-  
+
   ; update local symtable (before body typecheck, to allow recursivity)
   (let* ([params-types (map (lambda (param) (match param [(ast-pos-param _ type _) type]))
                             params)]
@@ -193,7 +193,7 @@
                     symtables)))))))
 
 ;; Function params
-;; <return> statements, symtables
+;; <returns> statements, symtables
 (define (typecheck-params params pos symtables)
   (define local-symtable (first symtables))
   (let-values
@@ -213,7 +213,7 @@
             (cons local-symtable (rest symtables)))))
 
 ;; Expression
-;; <return> statement, type
+;; <returns> statement, type
 (define (typecheck-expr expr symtables)
   (match expr
     [(ast-pos-num val pos)
@@ -234,14 +234,14 @@
      (typecheck-call func args pos symtables)]))
 
 ;; Num
-;; <return> expression, type
+;; <returns> expression, type
 (define (typecheck-num val pos)
   ; only integers are supported
   (values (ast-num val)
           std-int))
 
 ;; Const
-;; <return> statement, type
+;; <returns> statement, type
 (define (typecheck-const val pos)
   (match val
     [(or 'true 'false) (values (ast-const val)
@@ -250,13 +250,13 @@
                                std-none)]))
 
 ;; String
-;; <return> statement, type
+;; <returns> statement, type
 (define (typecheck-str val pos)
   (values (ast-str val)
           std-str))
 
 ;; Name
-;; <return> statement, type
+;; <returns> statement, type
 (define (typecheck-name id pos symtables)
   (define type (resolve-id id pos symtables))
   (values (ast-name id)
@@ -264,7 +264,7 @@
 
 ;; Binary operation
 ;; all operations are replaced by calls
-;; <return> statement, type
+;; <returns> statement, type
 (define (typecheck-binoper op lhs rhs pos symtables)
   ; typecheck operands
   (let-values ([(lhs lhs-type) (typecheck-expr lhs symtables)]
@@ -279,10 +279,10 @@
       (define return-type (cdr func-desc))
       (values (ast-call func-name (list lhs rhs))
               return-type))))
-  
+
 ;; Unary operation
 ;; all operations are replaced by calls
-;; <return> statement, type
+;; <returns> statement, type
 (define (typecheck-unoper op operand pos symtables)
   ; typecheck operand
   (let-values ([(operand operand-type) (typecheck-expr operand symtables)])
@@ -296,10 +296,10 @@
       (define return-type (cdr func-desc))
       (values (ast-call func-name (list operand))
               return-type))))
-  
+
 ;; Subscript
 ;; all subscripts accesses are replaced by calls
-;; <return> statement, type
+;; <returns> statement, type
 (define (typecheck-subscript value index pos symtables)
   ; check value is a string (TODO or a list)
   (let-values ([(value value-type) (typecheck-expr value symtables)])
@@ -321,7 +321,7 @@
       [_ (raise-not-subscriptable-error pos value-type)])))
 
 ;; Call
-;; <return> statement, type
+;; <returns> statement, type
 (define (typecheck-call callee args pos symtables)
   ; check callee is a function
   (define callee-type (resolve-id callee pos symtables))
@@ -339,7 +339,7 @@
 ;; Call arguments
 ;; <params-types> types of formal parameters
 ;; <args> actual arguments
-;; <return> statements, types
+;; <returns> statements, types
 (define (typecheck-args params-types args pos symtables)
   ; check arity
   (define params-count (length params-types))

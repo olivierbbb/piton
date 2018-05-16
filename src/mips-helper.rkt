@@ -25,7 +25,7 @@
             [(cons (? reg?) (? mem?)) (list (lw dest-loc src-val))]
             ; label to register
             [(cons (? reg?) (? label?)) (list (la dest-loc src-val))] ; la for str, lw for num
-        
+
             ; number to mem
             [(cons (? mem?) (? number?)) (list (li $t9 src-val)
                                                (sw $t9 dest-loc))]
@@ -59,7 +59,7 @@
            (values (fetch-outer-sp level-offset $t7)
                    (mem stack-offset $t7))]
           [_ (values empty src-val)])])
-    
+
     (values (append dest-instrs src-instrs)
             dest-loc
             src-val)))
@@ -95,7 +95,7 @@
   (define tmp-dest-loc (get-tmp-dest-loc dest-loc $t5))
   ; save to destination from temp register if needed
   (define save-dest-instrs (save-dest-loc dest-loc tmp-dest-loc))
-  
+
   (append load-src-instrs
           (list (instr tmp-dest-loc loaded-val))
           save-dest-instrs))
@@ -116,7 +116,7 @@
   (define tmp-dest-loc (get-tmp-dest-loc dest-loc $t4))
   ; save to destination from temp register if needed
   (define save-dest-instrs (save-dest-loc dest-loc tmp-dest-loc))
-  
+
   (append load-lhs-instrs
           load-rhs-instrs
           (list (instr tmp-dest-loc loaded-lhs-val loaded-rhs-val))

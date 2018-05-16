@@ -52,12 +52,12 @@
 (define main-lexer
   (lexer-src-pos
    ; allow ending without trailing line, even when indented
-   [(eof)          (append (handle-indent "\n") 
+   [(eof)          (append (handle-indent "\n")
                            (list (token-eof)))]
    [comment        (return-without-pos (main-lexer input-port))]
-   
+
    ;; Delimiters
-   [eol-and-indent (handle-indent lexeme)]   
+   [eol-and-indent (handle-indent lexeme)]
    [":"            (token-col)]
    [","            (token-comma)]
    ["("            (token-opar)]
@@ -117,7 +117,7 @@
 
 ;; Indentation
 (define indent-stack (list))
-;; <return> tokens to emit (eol, indent,dedent)
+;; <returns> tokens to emit (eol, indent,dedent)
 ;; and updates <indent-stack>
 (define (handle-indent eol-and-indent)
   (define indent-string (string-trim eol-and-indent "\n"
@@ -138,19 +138,19 @@
        (let ([string (string-trim string piece
                                   #:left? #t #:right? #f #:repeat? #f)])
          (loop string (rest stack)))]
-      
+
       ;; stack and string are both empty
       [(cons #t #t)
        ; indentation did not change
        (list (token-eol))]
-      
+
       ;; stack is empty but string isn't yet
       [(cons #t #f)
        ; push one indentation level
        (set! indent-stack (append indent-stack (list string)))
        (list (token-eol)
              (token-indent))]
-      
+
       ;; string is empty but stack isn't yet
       [(cons #f #t)
        ; pop one or several indentation levels

@@ -33,7 +33,7 @@
               (list (label "main"))
               (compile-stmts ast symtables frame-size)
               (list (jr $ra))))
-    
+
     ; separe data and text instructions
     (define-values (data-instrs text-instrs) (partition data-instr? instrs))
     (append (list (data-section))
@@ -234,7 +234,7 @@
     (match test
         [(ast-block body) (compile-block body $t9 symtables frame-size)]
         [_ (compile-expr test $t9 symtables frame-size)]))
-  
+
   (append (list if-label) ; here for clarity only
           test-instrs
           (list (beqz $t9 else-label))
@@ -260,7 +260,7 @@
     (match test
         [(ast-block body) (compile-block body $t9 symtables frame-size)]
         [_ (compile-expr test $t9 symtables frame-size)]))
-  
+
   (append (list while-label)
           test-instrs
           (list (beqz $t9 endwhile-label))
@@ -320,8 +320,9 @@
 ;; copy instructions from builtin function instead of jumping
 ;; <return> instructions
 (define (compile-inlined-call callee args dest-loc symtables frame-size)
-  ;; ok put arguments in $a registers because we know there are no nested
+  ;; ok to put arguments in $a registers because we know there are no nested
   ;; calls so they will not be overwritten
+  ;; TODO unnecessary ? directly pass arg locs?
   (define a-regs (list $a0 $a1 $a2 $a3))
   (define args-instrs
     (for/fold ([args-instrs (list)])
@@ -330,7 +331,7 @@
       (define dest-loc (list-ref a-regs i))
       (define expr-instrs (compile-expr arg dest-loc symtables frame-size))
       (append args-instrs expr-instrs)))
-  
+
   ; insert mips code
   (define func (hash-ref std-lib-inlined callee))
   (define func-instrs (func dest-loc a-regs))
