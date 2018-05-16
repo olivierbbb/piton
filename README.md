@@ -1,11 +1,11 @@
 ## What is Piton
 
-Piton is at the same time a language mimicking the syntax and semantics of Python and a compiler for this language, implemented in Racket. While type annotations are optional in Python (see PEP [484][1] and [526][2]), they are mandatory in Piton, which is statically and strongly typed. Piton does not implements any concepts such as inheritances or classes. For now, the compiler only supports MIPS assembly, but x86 may be added some day.
+Piton is both a language mimicking the syntax and semantics of Python and a compiler for this language, implemented in Racket. While type annotations are optional in Python (see PEP [484][1] and [526][2]), they are mandatory in Piton, which is statically and strongly typed. Piton does not implement concepts such as inheritance or classes. For now, the compiler only supports MIPS assembly, but x86 may be added some day.
 
 [1]: https://www.python.org/dev/peps/pep-0484/
 [2]: https://www.python.org/dev/peps/pep-0526/
 
-## Sample program and Tests
+## Tests and sample program
 
 The *tests/* folder contains a fairly exhaustive demonstration of all features and errors supported. You will need Spim (a MIPS simulator) and Python 3.6 to execute *run-features-tests.py*, as it will execute all code in *tests/features/* and compare Piton and Python output.
 
@@ -15,7 +15,9 @@ The *samples/* folder contains a short program showcasing Piton features. You ma
 
 ### The basics
 
-Piton comes with scalar types *int* and *bool*, and not-so-scalar *string*. ints and bools are assigned by copy and strings by reference, all of them are immutable. The *NoneType* also exists internally, as well as a *function* type, but no *function* nor *NoneType* variable can be declared in the language. ints and bools come with basic arithmetic, comparison and logical operators as well as the unary *not* operator. strings can be tested for equality and concatenated with the *+* operator, and offer subscript access to individual characters.
+Piton comes with scalar types *int* and *bool*, and not-so-scalar *string*. ints and bools are assigned by copy and strings by reference, all of them are immutable. The *NoneType* also exists internally, as well as a *function* type, but no *function* nor *NoneType* variable can be declared in the language. ints and bools come with basic arithmetic, comparison and logical operators as well as the unary *not* operator.
+
+strings can be tested for equality and concatenated with the *+* operator, and offer subscript access to individual characters.
 
 Supported controls structures are limited to *if*-(*else*) and *while*. Indentation is handled in the same fashion as in Python, it can vary in length and mix tabs and spaces. Comments are also supported.
 
@@ -25,7 +27,7 @@ Function calls are implemented, and Piton's standard library includes typed *pri
 
 ### Scoping
 
-Python's lexical scoping follows the *LEGB* rule: Local, Enclosed, Global, Built-in. In a Python file, symbols at the upper-most level are assigned to the global scope  (not considering the case of modules). In contrast, Piton does not really have a proper global scope, but all upper-most symbols are located in a implicit *main* function, which scopes acts a a kind of global scope enclosing everything else except built-ins. Apart from this, Piton follow the same *LEGB* order for symbol resolution and supports variable and function shadowing. Function bodies open a new scope, conditional branches do not, as in Python.
+Python's lexical scoping follows the *LEGB* rule: Local, Enclosed, Global, Built-in. In a Python file, symbols at the upper-most level are assigned to the global scope  (not considering the case of modules). In contrast, Piton does not really have a proper global scope, but all upper-most symbols are located in a implicit *main* function, which scopes acts a a kind of global scope enclosing everything else except built-ins. Apart from this, Piton follow the same *LEGB* order for symbol resolution and supports variable and function shadowing. Function bodies open a new scope, conditional branches do not, just as in Python.
 
 ### Safety
 
@@ -40,7 +42,7 @@ To simplify compilation, all binary and unary operations are converted into inte
 ```python
 print_int(a + 2 * b)
 ```
-will be transformed internally by the Piton compiler into:
+will be transformed in the AST by the Piton compiler into:
 
 ```python
 auto_8493 = mul_ints(2, b)
@@ -48,7 +50,7 @@ auto_8494 = add_ints(a, auto_8493)
 print(auto_8494)
 ```
 
-Inlining then becomes much easier as all returned values are already explicitly pushed on the stack. Note that to avoid issues with nested calls inside conditional statements, a internal AST block structure is used to enclose the flattened statements. Indeed, the additional "flat" statements cannot be inserted before the conditional statement, as they need to be reevaluated at every iteration of a while loop, for instance.
+Inlining then becomes much easier as all returned values are already explicitly pushed on the stack. Note that to avoid issues with nested calls inside conditional statements, a internal AST block structure is used to enclose the flattened statements. Indeed, the additional "flat" statements cannot be inserted before the conditional statement, as they need to be reevaluated at every iteration in the case of a while loop.
 
 ### Indentation parsing
 
@@ -64,7 +66,7 @@ def greet(name: str):
 greet("Sarah")
 ```
 
-Racket's yacc parser does not handle this situation out of the box. However, it is possible to wrap multiple tokens into one, and intercept all calls from the lexer to the parser so as to unwrap theses tokens and enqueue them, before dequeue one and returning it to the lexer.
+Racket's yacc parser does not handle this situation out of the box. However, it is possible to wrap multiple tokens into one, and intercept all calls from the lexer to the parser so as to unwrap theses tokens and enqueue them, before dequeuing one and returning it to the lexer.
 
 [3]: https://docs.python.org/3/reference/grammar.html
 
