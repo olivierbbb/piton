@@ -1,6 +1,6 @@
 ## What is Piton
 
-Piton is both a counterfeit of the Python programming language and a compiler for this language, implemented in Racket. Its syntax is similar to Python except that PEP [484][1]/[526][2]-style type annotations are mandatory, Piton being statically and strongly typed. It does not implements any concepts such as inheritances or classes. For now, the compiler only supports MIPS assembly, x86 might be added some day.
+Piton is at the same time a language mimicking the syntax and semantics of Python and a compiler for this language, implemented in Racket. While type annotations are optional in Python (see PEP [484][1] and [526][2]), they are mandatory in Piton, which is statically and strongly typed. Piton does not implements any concepts such as inheritances or classes. For now, the compiler only supports MIPS assembly, but x86 may be added some day.
 
 [1]: https://www.python.org/dev/peps/pep-0484/
 [2]: https://www.python.org/dev/peps/pep-0526/
@@ -37,13 +37,16 @@ While Python is highly permissive and dynamic, Piton aims to be a safe static la
 
 To simplify compilation, all binary and unary operations are converted into internal function calls, as well as subscript accesses. In order to avoid the runtime overhead of numerous functions call, these internal functions (as well as the typed *print* functions) are inlined by the compiler. What makes it possible is that during the semantic analysis, all nested function calls are flattened so as to avoid trouble with return values needing to be passed to the enclosing call. For instance, code such as this one:
 
-    print_int(a + 2 * b)
-
+```python
+print_int(a + 2 * b)
+```
 will be transformed internally by the Piton compiler into:
 
-    auto_8493 = mul_ints(2, b)
-    auto_8494 = add_ints(a, auto_8493)
-    print(auto_8494)
+```python
+auto_8493 = mul_ints(2, b)
+auto_8494 = add_ints(a, auto_8493)
+print(auto_8494)
+```
 
 Inlining then becomes much easier as all returned values are already explicitly pushed on the stack. Note that to avoid issues with nested calls inside conditional statements, a internal AST block structure is used to enclose the flattened statements. Indeed, the additional "flat" statements cannot be inserted before the conditional statement, as they need to be reevaluated at every iteration of a while loop, for instance.
 
@@ -51,13 +54,15 @@ Inlining then becomes much easier as all returned values are already explicitly 
 
 Python-style indentation parsing rests on the emission of *indent*/*dedents* tokens (see [Python 3 full grammar][3]). This requires the ability to emit several tokens from one parsing rule, in order to handle multiple dedents performed in one line such as in the following example:
 
-    def greet(name: str):
-        if name == "William":
-            print_str("Hi Bill!")
-        else:
-            print_str("Hello " + name)
-    # this line unidents 2 levels at once
-    greet("Sarah")
+```python
+def greet(name: str):
+    if name == "William":
+        print_str("Hi Bill!")
+    else:
+        print_str("Hello " + name)
+# this line unidents 2 levels at once
+greet("Sarah")
+```
 
 Racket's yacc parser does not handle this situation out of the box. However, it is possible to wrap multiple tokens into one, and intercept all calls from the lexer to the parser so as to unwrap theses tokens and enqueue them, before dequeue one and returning it to the lexer.
 
@@ -73,15 +78,17 @@ Functions arguments are passed by pushing them on the stack before calling the f
 
 Free variables are resolved at runtime using activation links, as described on [this page][4]. The tricky part to understand is that while it is possible to know at compile-time to which scope belongs a variable referred by a non-local symbol, we do not know yet where it will lay in memory relatively to the current frame, as this depends on the execution flow:
 
-    name: str = input()
-    def greet(greeting: str):
-        print_str(greeting + " " + name)
-    def greet_warmly():
-        greet("Hello dear" + name)
-    if be_warm:
-        greet_warmly()
-    else:
-        greet("Hello")
+```python
+name: str = input()
+def greet(greeting: str):
+    print_str(greeting + " " + name)
+def greet_warmly():
+    greet("Hello dear" + name)
+if be_warm:
+    greet_warmly()
+else:
+    greet("Hello")
+```
 
 In this example, the symbol *name* inside *greet* always refer to the same variable belonging to the immediate outer scope of *greet*. But depending on where *greet* is called, the frame of this scope might be the previous one on the stack, or the one before.
 
