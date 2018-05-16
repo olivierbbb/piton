@@ -6,23 +6,29 @@ import sys
 import os
 import subprocess
 
+if os.path.basename(os.getcwd()) == "tests":
+    piton_path = "../src/piton.rkt"
+    tests_path = "errors/"
+    lib_path = "features.lib"
+else:
+    piton_path = "src/piton.rkt"
+    tests_path = "tests/errors/"
+
 tests = []
-for testfile in os.scandir("error-tests/"):
+for testfile in os.scandir(tests_path):
     if testfile.is_dir():
         continue
     filename = testfile.name
     if not filename.endswith(".py"):
         continue
-    if filename == "lib.py":
-        continue
-    tests.append("error-tests/" + filename)
-    
+    tests.append(tests_path + filename)
+
 tests.sort()
 
 for test in tests:
     print(test)
     try:
-        compile_cmd = "racket -t ./src/piton.rkt " + test
+        compile_cmd = piton_path + " " + test
         subprocess.check_output([compile_cmd], shell=True)
         run_cmd = "spim -file ./out.s"
         piton_output = subprocess.check_output([run_cmd], shell=True)
